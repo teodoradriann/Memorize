@@ -8,16 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    let emojis: [String] = ["🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🦘", "🐀"]
-    @State var cardCounter = 4
+    @State var emojis: [String] = ["🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🦘", "🐀", "🐪",
+                                   "🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🦘", "🐀", "🐪"]
+    
+    let foods = ["🌭", "🍔", "🍟", "🍕", "🌮", "🌯", "🥗", "🥘", "🍣", "🍯", "🍚", "🥮",
+                 "🌭", "🍔", "🍟", "🍕", "🌮", "🌯", "🥗", "🥘", "🍣", "🍯", "🍚", "🥮"]
+    
+    let faces = ["😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠",
+                 "😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠"]
+    
     
     var body: some View {
         VStack {
+            Text("Memorize!")
+                .font(.largeTitle)
+                .bold()
+                .monospaced()
             ScrollView{
                 cards
             }
             Spacer()
-            cardsAdjusters
+            themeChooser
         }
         .padding()
         .background(Color.gray)
@@ -28,34 +39,48 @@ struct ContentView: View {
             ForEach(0 ..< emojis.count, id: \.self) { index in
                 CardView(emoji: emojis[index]).aspectRatio(1.5, contentMode: .fill)
             }
+            .onAppear {
+                emojis.shuffle()
+            }
         }.foregroundStyle(.quaternary)
     }
     
-    //functie care ajusteaza numarul cardurilor conform unui numar si returneaza un buton
-    func adjustCards(by number: Int, nameOfAdjuster: String) -> some View {
-        Button(action: {
-            cardCounter += number
-        }, label: {
-            Image(systemName: nameOfAdjuster)
-                .font(.largeTitle)
-                .foregroundStyle(.white)
-        }).disabled(cardCounter + number < 1 || cardCounter + number > emojis.count)
-    }
-    
-    var cardsAdjusters: some View {
-        HStack{
-            cardAdder
-            Spacer().frame(maxWidth: 150)
-            cardRemover
+    var themeChooser: some View {
+        HStack(spacing: 75){
+            animalsThemeBtn
+            foodsThemeBtn
+            emojisThemeBtn
         }
+        .font(.largeTitle)
     }
     
-    var cardAdder: some View {
-        adjustCards(by: +1, nameOfAdjuster: "plus")
+    func changeCards(theme name: String, emojis: [String]) -> some View {
+        Button(action: {
+            switch name {
+            case "dog.fill":
+                print("animals")
+            case "fork.knife":
+                print("foods")
+            case "smiley":
+                print("faces")
+            default:
+                print("error")
+            }
+        }, label: {
+            Image(systemName: name)
+        })
     }
     
-    var cardRemover: some View {
-        adjustCards(by: -1, nameOfAdjuster: "minus")
+    var animalsThemeBtn: some View {
+        changeCards(theme: "dog.fill", emojis: emojis)
+    }
+    
+    var foodsThemeBtn: some View {
+        changeCards(theme: "fork.knife", emojis: foods)
+    }
+    
+    var emojisThemeBtn: some View {
+        changeCards(theme: "smiley", emojis: faces)
     }
 }
 
