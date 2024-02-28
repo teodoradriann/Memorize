@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var emojis: [String] = ["🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🦘", "🐀", "🐪",
-                                   "🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🦘", "🐀", "🐪"]
+    @State var emojis: [String] = ["🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🐀", "🐍", "🐊", "🤡",
+                                   "🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🐀", "🐍", "🐊"]
     
-    let foods = ["🌭", "🍔", "🍟", "🍕", "🌮", "🌯", "🥗", "🥘", "🍣", "🍯", "🍚", "🥮",
+    let animals = ["🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🦘", "🐀", "🐪", "🤡",
+                  "🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🦘", "🐀", "🐪"]
+    
+    let foods = ["🌭", "🍔", "🍟", "🍕", "🌮", "🌯", "🥗", "🥘", "🍣", "🍯", "🍚", "🥮", "🤡",
                  "🌭", "🍔", "🍟", "🍕", "🌮", "🌯", "🥗", "🥘", "🍣", "🍯", "🍚", "🥮"]
     
-    let faces = ["😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠",
+    let faces = ["😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠", "🤡",
                  "😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠"]
     
     
@@ -35,9 +38,9 @@ struct ContentView: View {
     }
     
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive (minimum: 120))]) {
+        LazyVGrid(columns: [GridItem(.adaptive (minimum: 60))]) {
             ForEach(0 ..< emojis.count, id: \.self) { index in
-                CardView(emoji: emojis[index]).aspectRatio(1.5, contentMode: .fill)
+                CardView(emoji: emojis[index]).aspectRatio(2/3, contentMode: .fit)
             }
             .onAppear {
                 emojis.shuffle()
@@ -54,33 +57,26 @@ struct ContentView: View {
         .font(.largeTitle)
     }
     
-    func changeCards(theme name: String, emojis: [String]) -> some View {
+    func changeCards(theme name: String, emojisArray: [String]) -> some View {
         Button(action: {
-            switch name {
-            case "dog.fill":
-                print("animals")
-            case "fork.knife":
-                print("foods")
-            case "smiley":
-                print("faces")
-            default:
-                print("error")
-            }
+            emojis.removeAll()
+            emojis.append(contentsOf: emojisArray)
+            emojis.shuffle()
         }, label: {
             Image(systemName: name)
         })
     }
     
     var animalsThemeBtn: some View {
-        changeCards(theme: "dog.fill", emojis: emojis)
+        changeCards(theme: "dog.fill", emojisArray: animals)
     }
     
     var foodsThemeBtn: some View {
-        changeCards(theme: "fork.knife", emojis: foods)
+        changeCards(theme: "fork.knife", emojisArray: foods)
     }
     
     var emojisThemeBtn: some View {
-        changeCards(theme: "smiley", emojis: faces)
+        changeCards(theme: "smiley", emojisArray: faces)
     }
 }
 
@@ -90,14 +86,14 @@ struct CardView: View {
     @State var isFacedUp = true // @State e un fel de pointer care ma lasa sa modific variabila
     
     var body: some View {
-        let base = RoundedRectangle(cornerRadius: 20) // baza, un dreptunghi cu corner radius de 40
+        let base = RoundedRectangle(cornerRadius: 10) // baza, un dreptunghi cu corner radius de 40
         // ZStackul adica 2 dreptunghiuri suprapuse, unul alb si celalat peste el care e borderul
         // apoi Emojiul
         // opacitatea o setez daca e sau nu cu fata in sus
         ZStack {
             Group {
                 base.fill(.white)
-                base.strokeBorder(lineWidth: 4)
+                base.strokeBorder(lineWidth: 3)
                 Text(emoji).font(.largeTitle)
             }
             .opacity(isFacedUp ? 1 : 0)
