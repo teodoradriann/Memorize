@@ -20,6 +20,7 @@ struct ContentView: View {
     let faces = ["😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠", "🤡",
                  "😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠"]
     
+    @State var color: Color = .white
     
     var body: some View {
         VStack {
@@ -27,6 +28,7 @@ struct ContentView: View {
                 .font(.largeTitle)
                 .bold()
                 .monospaced()
+                .foregroundStyle(.black)
             ScrollView{
                 cards
             }
@@ -40,7 +42,8 @@ struct ContentView: View {
     var cards: some View {
         LazyVGrid(columns: [GridItem(.adaptive (minimum: 60))]) {
             ForEach(0 ..< emojis.count, id: \.self) { index in
-                CardView(emoji: emojis[index]).aspectRatio(2/3, contentMode: .fit)
+                CardView(emoji: emojis[index], themeColor: $color)
+                    .aspectRatio(2/3, contentMode: .fit)
             }
             .onAppear {
                 emojis.shuffle()
@@ -49,41 +52,52 @@ struct ContentView: View {
     }
     
     var themeChooser: some View {
-        HStack(spacing: 75){
-            animalsThemeBtn
-            foodsThemeBtn
-            emojisThemeBtn
+        VStack{
+            HStack(spacing: 75){
+                animalsThemeBtn
+                foodsThemeBtn
+                emojisThemeBtn
+            }
+            .font(.largeTitle)
+            HStack(spacing: 65){
+                Text("Animals")
+                Text("Foods")
+                Text("Emojis")
+            }
+            .foregroundStyle(.blue)
         }
-        .font(.largeTitle)
     }
     
-    func changeCards(theme name: String, emojisArray: [String]) -> some View {
-        Button(action: {
+    func changeCards(theme name: String, emojisArray: [String], themeColor: Color) -> some View {
+        return Button(action: {
             emojis.removeAll()
             emojis.append(contentsOf: emojisArray)
             emojis.shuffle()
+            color = themeColor
         }, label: {
             Image(systemName: name)
         })
     }
     
     var animalsThemeBtn: some View {
-        changeCards(theme: "dog.fill", emojisArray: animals)
+        return changeCards(theme: "dog.fill", emojisArray: animals, themeColor: .white)
     }
     
     var foodsThemeBtn: some View {
-        changeCards(theme: "fork.knife", emojisArray: foods)
+        return changeCards(theme: "fork.knife", emojisArray: foods, themeColor: .brown)
     }
     
     var emojisThemeBtn: some View {
-        changeCards(theme: "smiley", emojisArray: faces)
+        return changeCards(theme: "smiley", emojisArray: faces, themeColor: .clear)
     }
+
 }
 
 // structura de tip View care imi face un card, are 2 proprietati: emojiul si daca este sau nu intoarsa
 struct CardView: View {
     let emoji: String
-    @State var isFacedUp = true // @State e un fel de pointer care ma lasa sa modific variabila
+    @State var isFacedUp: Bool = false // @State e un fel de pointer care ma lasa sa modific variabila
+    @Binding var themeColor: Color
     
     var body: some View {
         let base = RoundedRectangle(cornerRadius: 10) // baza, un dreptunghi cu corner radius de 40
@@ -92,7 +106,7 @@ struct CardView: View {
         // opacitatea o setez daca e sau nu cu fata in sus
         ZStack {
             Group {
-                base.fill(.white)
+                base.fill(themeColor)
                 base.strokeBorder(lineWidth: 3)
                 Text(emoji).font(.largeTitle)
             }
