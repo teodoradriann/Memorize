@@ -17,35 +17,28 @@ struct EmojiMemoryGameView: View {
                 .bold()
                 .monospaced()
                 .foregroundStyle(.black)
-            ScrollView{
+            ScrollView {
                 cards
+                    .animation(.default, value: viewModel.cards)
             }
             VStack {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 25.0)
-                        .frame(minWidth: 0, maxWidth: 80, minHeight: 0, maxHeight: 40)
-                        .foregroundStyle(.blue)
-                    Button(action: {
-                        viewModel.shuffle()
-                    }, label: {
-                        Text("Shuffle")
-                            .foregroundStyle(.white)
-                            .font(.system(size: 18))
-                    }).padding()
-                }
+                shuffleButton
                 themePicker
             }
         }
         .padding()
-        .background(Color.gray)
+        .background(.gray)
     }
     
     var cards: some View {
         LazyVGrid(columns: [GridItem(.adaptive (minimum: 85), spacing: 0)], spacing: 0) {
-            ForEach(viewModel.cards.indices, id: \.self) { index in
-                CardView(viewModel.cards[index])
+            ForEach(viewModel.cards) { card in
+                CardView(card)
                     .aspectRatio(2/3, contentMode: .fit)
                     .padding(4)
+                    .onTapGesture {
+                        viewModel.choose(card)
+                    }
             }
         }.foregroundStyle(.quaternary)
     }
@@ -77,6 +70,21 @@ struct EmojiMemoryGameView: View {
     var facesTheme: some View {
         changeTheme("smiley.fill")
     }
+    
+    var shuffleButton: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 25.0)
+                .frame(minWidth: 0, maxWidth: 80, minHeight: 0, maxHeight: 40)
+                .foregroundStyle(.blue)
+            Button(action: {
+                viewModel.shuffle()
+            }, label: {
+                Text("Shuffle")
+                    .foregroundStyle(.white)
+                    .font(.system(size: 18))
+            }).padding()
+        }
+    }
 }
 
 // structura de tip View care imi face un card, are 2 proprietati: emojiul si daca este sau nu intoarsa
@@ -101,6 +109,7 @@ struct CardView: View {
             .opacity(card.isFacedUp ? 1 : 0)
             base.fill().opacity(card.isFacedUp ? 0 : 1)
         }
+        .opacity(card.isFacedUp || !card.isMatched ? 1 : 0)
     }
 }
 
