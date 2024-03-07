@@ -12,35 +12,57 @@ struct EmojiMemoryGameView: View {
     
     var body: some View {
         VStack {
-            Text("Memorize!")
-                .font(.largeTitle)
-                .bold()
-                .monospaced()
-                .foregroundStyle(.black)
+            VStack {
+                Text("Memorize \(viewModel.themeName)!")
+                    .font(.largeTitle)
+                    .bold()
+                    .monospaced()
+                    .foregroundStyle(.black)
+                    .aspectRatio(contentMode: .fill)
+                if (!viewModel.gameOver){
+                    Text("Score: \(viewModel.score)")
+                        .bold()
+                        .monospaced()
+                }
+            }
             ScrollView {
                 cards
                     .animation(.default, value: viewModel.cards)
             }
             VStack {
-                shuffleButton
+                HStack{
+                    newGame
+                }
                 themePicker
             }
         }
         .padding()
-        .background(.gray)
+        .background(viewModel.color)
     }
     
     var cards: some View {
-        LazyVGrid(columns: [GridItem(.adaptive (minimum: 85), spacing: 0)], spacing: 0) {
-            ForEach(viewModel.cards) { card in
-                CardView(card)
-                    .aspectRatio(2/3, contentMode: .fit)
-                    .padding(4)
-                    .onTapGesture {
-                        viewModel.choose(card)
+        Group{
+            if viewModel.gameOver {
+                Text("congrats! your final score is \(viewModel.score)")
+                    .bold()
+                    .monospaced()
+                    .font(.largeTitle)
+                    .multilineTextAlignment(.center)
+                    .padding(50)
+                
+            } else {
+                LazyVGrid(columns: [GridItem(.adaptive (minimum: 85), spacing: 0)], spacing: 0) {
+                    ForEach(viewModel.cards) { card in
+                        CardView(card)
+                            .aspectRatio(2/3, contentMode: .fit)
+                            .padding(4)
+                            .onTapGesture {
+                                viewModel.choose(card)
+                            }
                     }
+                }.foregroundStyle(.quaternary)
             }
-        }.foregroundStyle(.quaternary)
+        }
     }
     
     func changeTheme(_ newTheme: String) -> some View {
@@ -52,11 +74,14 @@ struct EmojiMemoryGameView: View {
     }
     
     var themePicker: some View {
-        HStack (spacing: 50) {
+        HStack (spacing: 20) {
             animalsTheme
             foodTheme
             facesTheme
-        }
+            sportsTheme
+            vehiclesTheme
+            flagsTheme
+        }.foregroundStyle(.black)
     }
     
     var animalsTheme: some View {
@@ -71,15 +96,27 @@ struct EmojiMemoryGameView: View {
         changeTheme("smiley.fill")
     }
     
-    var shuffleButton: some View {
+    var sportsTheme: some View {
+        changeTheme("soccerball")
+    }
+    
+    var vehiclesTheme: some View {
+        changeTheme("car.fill")
+    }
+    
+    var flagsTheme: some View {
+        changeTheme("flag.fill")
+    }
+    
+    var newGame: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25.0)
-                .frame(minWidth: 0, maxWidth: 80, minHeight: 0, maxHeight: 40)
-                .foregroundStyle(.blue)
+                .frame(minWidth: 0, maxWidth: 110, minHeight: 0, maxHeight: 40)
+                .foregroundStyle(.black)
             Button(action: {
-                viewModel.shuffle()
+                viewModel.startNewGame()
             }, label: {
-                Text("Shuffle")
+                Text("New Game")
                     .foregroundStyle(.white)
                     .font(.system(size: 18))
             }).padding()
@@ -96,7 +133,7 @@ struct CardView: View {
     }
     
     var body: some View {
-        let base = RoundedRectangle(cornerRadius: 10) // baza, un dreptunghi cu corner radius de 40
+        let base = RoundedRectangle(cornerRadius: 35) // baza, un dreptunghi cu corner radius de 40
         // ZStackul adica 2 dreptunghiuri suprapuse, unul alb si celalat peste el care e borderul
         // apoi Emojiul
         // opacitatea o setez daca e sau nu cu fata in sus
