@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EmojiMemoryGameView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
+    private let aspectRatio : CGFloat = 2/3
     
     var body: some View {
         VStack {
@@ -25,44 +26,67 @@ struct EmojiMemoryGameView: View {
                         .monospaced()
                 }
             }
-            ScrollView {
-                cards
-                    .animation(.default, value: viewModel.cards)
+            if (!viewModel.gameOver){
+                cards.animation(.default, value: viewModel.cards)
             }
-            VStack {
+            else {
+                Spacer()
+                gameOverScreen
+                Spacer()
+            }
+            VStack(spacing: 35) {
                 HStack{
                     newGame
                 }
                 themePicker
             }
         }
-        .padding()
+        .padding(40)
         .background(viewModel.color)
     }
     
-    var cards: some View {
-        Group{
-            if viewModel.gameOver {
-                Text("congrats! your final score is \(viewModel.score)")
-                    .bold()
-                    .monospaced()
-                    .font(.largeTitle)
-                    .multilineTextAlignment(.center)
-                    .padding(50)
-                
-            } else {
-                LazyVGrid(columns: [GridItem(.adaptive (minimum: 85), spacing: 0)], spacing: 0) {
-                    ForEach(viewModel.cards) { card in
-                        CardView(card)
-                            .aspectRatio(2/3, contentMode: .fit)
-                            .padding(4)
-                            .onTapGesture {
-                                viewModel.choose(card)
-                            }
-                    }
-                }.foregroundStyle(.quaternary)
-            }
+    private var cards: some View {
+        GeometryReader { geometry in
+            let gridItemSize = gridItemWidthThatFits(count: viewModel.cards.count, size: geometry.size, atAspectRatio: aspectRatio)
+            LazyVGrid(columns: [GridItem(.adaptive (minimum: gridItemSize), spacing: 0)], spacing: 0) {
+                ForEach(viewModel.cards) { card in
+                    CardView(card)
+                        .aspectRatio(aspectRatio, contentMode: .fit)
+                        .padding(4)
+                        .onTapGesture {
+                            viewModel.choose(card)
+                        }
+                }
+            }.foregroundStyle(.quaternary)
         }
+    }
+    
+    private var gameOverScreen: some View {
+        Text("Congrats!  Your final score is \(viewModel.score)")
+            .bold()
+            .monospaced()
+            .font(.largeTitle)
+            .multilineTextAlignment(.center)
+            .padding(50)
+    }
+    
+    func gridItemWidthThatFits(count: Int, size: CGSize, atAspectRatio: CGFloat) -> CGFloat {
+        let count = CGFloat(count)
+        var columnCount = 1.0
+        repeat {
+            let width = size.width / columnCount
+            let height = width / atAspectRatio
+            
+            let rowCount = (count / columnCount).rounded(.up)
+            if rowCount * height < size.height {
+                return (size.width / columnCount).rounded(.down)
+            }
+            else {
+                columnCount += 1
+            }
+        } while columnCount < count
+        
+        return min(size.width / count, size.height * atAspectRatio).rounded(.down)
     }
     
     func changeTheme(_ newTheme: String) -> some View {
@@ -73,7 +97,7 @@ struct EmojiMemoryGameView: View {
         })
     }
     
-    var themePicker: some View {
+    private var themePicker: some View {
         HStack (spacing: 20) {
             animalsTheme
             foodTheme
@@ -84,31 +108,31 @@ struct EmojiMemoryGameView: View {
         }.foregroundStyle(.black)
     }
     
-    var animalsTheme: some View {
+    private var animalsTheme: some View {
         changeTheme("dog.fill")
     }
     
-    var foodTheme: some View {
+    private var foodTheme: some View {
         changeTheme("carrot.fill")
     }
     
-    var facesTheme: some View {
+    private var facesTheme: some View {
         changeTheme("smiley.fill")
     }
     
-    var sportsTheme: some View {
+    private var sportsTheme: some View {
         changeTheme("soccerball")
     }
     
-    var vehiclesTheme: some View {
+    private var vehiclesTheme: some View {
         changeTheme("car.fill")
     }
     
-    var flagsTheme: some View {
+    private var flagsTheme: some View {
         changeTheme("flag.fill")
     }
     
-    var newGame: some View {
+    private var newGame: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25.0)
                 .frame(minWidth: 0, maxWidth: 110, minHeight: 0, maxHeight: 40)
@@ -121,32 +145,6 @@ struct EmojiMemoryGameView: View {
                     .font(.system(size: 18))
             }).padding()
         }
-    }
-}
-
-// structura de tip View care imi face un card, are 2 proprietati: emojiul si daca este sau nu intoarsa
-struct CardView: View {
-    let card: MemoryGame<String>.Card
-    
-    init(_ card: MemoryGame<String>.Card) {
-        self.card = card
-    }
-    
-    var body: some View {
-        let base = RoundedRectangle(cornerRadius: 35) // baza, un dreptunghi cu corner radius de 40
-        // ZStackul adica 2 dreptunghiuri suprapuse, unul alb si celalat peste el care e borderul
-        // apoi Emojiul
-        // opacitatea o setez daca e sau nu cu fata in sus
-        ZStack {
-            Group {
-                base.fill(.white)
-                base.strokeBorder(lineWidth: 3)
-                Text(card.content).font(.system(size: 100)).minimumScaleFactor(0.01).aspectRatio(1, contentMode: .fit)
-            }
-            .opacity(card.isFacedUp ? 1 : 0)
-            base.fill().opacity(card.isFacedUp ? 0 : 1)
-        }
-        .opacity(card.isFacedUp || !card.isMatched ? 1 : 0)
     }
 }
 

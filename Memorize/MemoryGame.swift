@@ -13,7 +13,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     private(set) var score: Int
     private(set) var gameOver: Bool = false
     var indexOfTheOneAndOnlyFacedUpCard: Int?
-    
+
     init(theme: Theme, score: Int, cardContent: (Int) -> CardContent) {
         self.theme = theme
         self.score = 0

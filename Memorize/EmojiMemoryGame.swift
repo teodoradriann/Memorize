@@ -16,29 +16,28 @@ class EmojiMemoryGame: ObservableObject {
     private static let faces = ["😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠"]
     private static let sports = ["⚽️", "🏀", "🏈", "⚾️", "🏓", "🏐", "🏉", "🎣"]
     private static let vehicles = ["🚗", "🚕", "🚙", "🚔", "🏍️", "🚜"]
-    private static let flags = ["🇷🇴", "🇺🇸", "🇬🇧", "🇩🇪", "🇫🇷", "🇯🇵", "🇨🇳", "🇰🇷", "🇰🇵", "🇪🇸"]
+    private static let flags = ["🇷🇴", "🇺🇸", "🇬🇧", "🇩🇪", "🇫🇷", "🇯🇵", "🇨🇳", "🇰🇷", "🇪🇸", "🇱🇺", "🇬🇪", "🏴󠁧󠁢󠁷󠁬󠁳󠁿"]
     
     private static func createMemoryGame(of theme: Theme, score: Int) -> MemoryGame<String> {
         MemoryGame(theme: theme, score: 0) { pairIndex in
-            if theme.emojis.indices.contains(pairIndex){
                 return theme.emojis[pairIndex]
-            }
-            else {
-                return "❓"
-            }
         }
     }
     
     private static let themes : [Theme] = [
         Theme(name: "Animals", emojis: animals, numberOfPairs: animals.count, color: "white"),
-        Theme(name: "Foods", emojis: foods, numberOfPairs: 4, color: "indigo"),
-        Theme(name: "Faces", emojis: faces, numberOfPairs: 90, color: "brown"),
+        Theme(name: "Foods", emojis: foods, numberOfPairs: foods.count, color: "indigo"),
+        Theme(name: "Faces", emojis: faces, numberOfPairs: faces.count, color: "brown"),
         Theme(name: "Sports", emojis: sports, numberOfPairs: sports.count, color: "mint"),
-        Theme(name: "Vehicles", emojis: vehicles, numberOfPairs: vehicles.count, color: "green"),
+        Theme(name: "Vehicles", emojis: vehicles, numberOfPairs: vehicles.count, color: "blue"),
         Theme(name: "Countires", emojis: flags, numberOfPairs: flags.count, color: "gray")
     ]
     
     @Published private var model = createMemoryGame(of: themes.randomElement()!, score: 0)
+    
+    var numberOfPairs: Int {
+        model.theme.numberOfPairs
+    }
     
     var score: Int {
         model.score
@@ -49,11 +48,11 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     var cards: Array<MemoryGame<String>.Card> {
-        return model.cards
+        model.cards
     }
     
     var gameOver: Bool {
-        return model.gameOver
+        model.gameOver
     }
     
     var color: Color {
@@ -66,8 +65,8 @@ class EmojiMemoryGame: ObservableObject {
                 .brown
         case "mint":
                 .mint
-        case "green":
-                .green
+        case "blue":
+                .blue
         case "indigo":
                 .indigo
         default:
