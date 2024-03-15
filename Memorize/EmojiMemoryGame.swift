@@ -18,22 +18,22 @@ class EmojiMemoryGame: ObservableObject {
     private static let vehicles = ["🚗", "🚕", "🚙", "🚔", "🏍️", "🚜"]
     private static let flags = ["🇷🇴", "🇺🇸", "🇬🇧", "🇩🇪", "🇫🇷", "🇯🇵", "🇨🇳", "🇰🇷", "🇪🇸", "🇱🇺", "🇬🇪", "🏴󠁧󠁢󠁷󠁬󠁳󠁿"]
     
-    private static func createMemoryGame(of theme: Theme, score: Int) -> MemoryGame<String> {
-        MemoryGame(theme: theme, score: 0) { pairIndex in
+    private static func createMemoryGame(of theme: Theme) -> MemoryGame<String> {
+        MemoryGame(theme: theme) { pairIndex in
                 return theme.emojis[pairIndex]
         }
     }
     
     private static let themes : [Theme] = [
-        Theme(name: "Animals", emojis: animals, numberOfPairs: animals.count, color: "white"),
+        Theme(name: "Animals", emojis: animals, numberOfPairs: animals.count, color: "red"),
         Theme(name: "Foods", emojis: foods, numberOfPairs: foods.count, color: "indigo"),
         Theme(name: "Faces", emojis: faces, numberOfPairs: faces.count, color: "brown"),
-        Theme(name: "Sports", emojis: sports, numberOfPairs: sports.count, color: "mint"),
+        Theme(name: "Sports", emojis: sports, numberOfPairs: sports.count, color: "purple"),
         Theme(name: "Vehicles", emojis: vehicles, numberOfPairs: vehicles.count, color: "blue"),
         Theme(name: "Countires", emojis: flags, numberOfPairs: flags.count, color: "gray")
     ]
     
-    @Published private var model = createMemoryGame(of: themes.randomElement()!, score: 0)
+    @Published private var model = createMemoryGame(of: themes.randomElement()!)
     
     var numberOfPairs: Int {
         model.theme.numberOfPairs
@@ -57,14 +57,14 @@ class EmojiMemoryGame: ObservableObject {
     
     var color: Color {
         switch model.theme.color {
-        case "white":
-                .white
+        case "red":
+                .red
         case "gray":
                 .gray
         case "brown":
                 .brown
-        case "mint":
-                .mint
+        case "purple":
+                .purple
         case "blue":
                 .blue
         case "indigo":
@@ -82,7 +82,7 @@ class EmojiMemoryGame: ObservableObject {
     
     func startNewGame(){
         let randomTheme = EmojiMemoryGame.themes.randomElement()!
-        self.model = EmojiMemoryGame.createMemoryGame(of: randomTheme, score: 0)
+        self.model = EmojiMemoryGame.createMemoryGame(of: randomTheme)
     }
     
     func changeTheme(theme: String) {
@@ -96,7 +96,7 @@ class EmojiMemoryGame: ObservableObject {
         ]
         
         if let selectedTheme = themeMappings[theme] {
-            self.model = EmojiMemoryGame.createMemoryGame(of: selectedTheme, score: 0)
+            self.model = EmojiMemoryGame.createMemoryGame(of: selectedTheme)
         }
     }
     

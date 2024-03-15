@@ -16,18 +16,31 @@ struct CardView: View {
     }
     
     var body: some View {
-        ZStack{
-            Pie(endAngle: .degrees(240))
-                .opacity(0.8)
-                .padding(3)
-                .foregroundStyle(.red)
-            Text(card.content)
-                .font(.system(size: 100))
-                .minimumScaleFactor(0.01)
-                .aspectRatio(1, contentMode: .fit)
+        TimelineView(.animation){ timeline in
+            if card.isFacedUp || !card.isMatched{
+                ZStack{
+                    Pie(endAngle: .degrees(card.bonusPercentRemaining * 360))
+                        .opacity(0.8)
+                        .padding(3)
+                        .foregroundStyle(.red)
+                        .transition(.scale)
+                    cardContents
+                }.padding()
+            } else {
+                Color.clear
+            }
         }
         .cardify(isFacedUp: card.isFacedUp)
         .opacity(card.isFacedUp || !card.isMatched ? 1 : 0)
+    }
+    
+    var cardContents: some View {
+        Text(card.content)
+            .font(.system(size: 100))
+            .minimumScaleFactor(0.01)
+            .aspectRatio(1, contentMode: .fit)
+            .rotationEffect(.degrees(card.isMatched ? 360 : 0))
+            .animation(.easeInOut(duration: 1), value: card.isMatched)
     }
 }
 

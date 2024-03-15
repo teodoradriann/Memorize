@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A05E6A32BA3B1F700AAE6C9 /* FlyingNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A05E6A22BA3B1F700AAE6C9 /* FlyingNumber.swift */; };
 		3A2E62EE2B8CD11200475DC6 /* MemorizeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2E62ED2B8CD11200475DC6 /* MemorizeApp.swift */; };
 		3A2E62F02B8CD11200475DC6 /* EmojiMemoryGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A2E62EF2B8CD11200475DC6 /* EmojiMemoryGameView.swift */; };
 		3A2E62F22B8CD11300475DC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A2E62F12B8CD11300475DC6 /* Assets.xcassets */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3A05E6A22BA3B1F700AAE6C9 /* FlyingNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlyingNumber.swift; sourceTree = "<group>"; };
 		3A2E62EA2B8CD11200475DC6 /* Memorize.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Memorize.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A2E62ED2B8CD11200475DC6 /* MemorizeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemorizeApp.swift; sourceTree = "<group>"; };
 		3A2E62EF2B8CD11200475DC6 /* EmojiMemoryGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMemoryGameView.swift; sourceTree = "<group>"; };
@@ -65,6 +67,7 @@
 			children = (
 				3A2E62ED2B8CD11200475DC6 /* MemorizeApp.swift */,
 				3A2E62EF2B8CD11200475DC6 /* EmojiMemoryGameView.swift */,
+				3A05E6A22BA3B1F700AAE6C9 /* FlyingNumber.swift */,
 				3A7259DA2B9CFD59009FECD9 /* CardView.swift */,
 				3A7259DC2B9D0520009FECD9 /* Pie.swift */,
 				3AEAB72D2B8FF597006415F0 /* MemoryGame.swift */,
@@ -157,6 +160,7 @@
 			files = (
 				3A2E62F02B8CD11200475DC6 /* EmojiMemoryGameView.swift in Sources */,
 				3A2E62EE2B8CD11200475DC6 /* MemorizeApp.swift in Sources */,
+				3A05E6A32BA3B1F700AAE6C9 /* FlyingNumber.swift in Sources */,
 				3A7259DF2B9D0F78009FECD9 /* Cardify.swift in Sources */,
 				3AE12BB72B99131700FA5C2D /* Theme.swift in Sources */,
 				3AEAB72E2B8FF597006415F0 /* MemoryGame.swift in Sources */,

@@ -10,13 +10,12 @@ import Foundation
 struct MemoryGame<CardContent> where CardContent: Equatable {
     private(set) var cards: [Card]
     private(set) var theme: Theme
-    private(set) var score: Int
+    private(set) var score: Int = 0
     private(set) var gameOver: Bool = false
     var indexOfTheOneAndOnlyFacedUpCard: Int?
 
-    init(theme: Theme, score: Int, cardContent: (Int) -> CardContent) {
+    init(theme: Theme, cardContent: (Int) -> CardContent) {
         self.theme = theme
-        self.score = 0
         cards = []
         for i in 0..<max(2, theme.numberOfPairs) {
             let content = cardContent(i)
@@ -34,7 +33,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                     if cards[chosenIndex].content == cards[potentialMatchIndex].content{
                         cards[chosenIndex].isMatched = true
                         cards[potentialMatchIndex].isMatched = true
-                        score += 2
+                        score += 2 + cards[chosenIndex].bonus + cards[potentialMatchIndex].bonus
                     } else {
                         if (cards[chosenIndex].previouslySeen || cards[potentialMatchIndex].previouslySeen){
                             score -= 1
@@ -69,10 +68,60 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     
     
     struct Card: Equatable, Identifiable {
-        var isFacedUp = false
-        var isMatched = false
+        var isFacedUp = false {
+            didSet {
+                if isFacedUp {
+                    startUsingBonusTime()
+                } else {
+                    stopUsingBonusTime()
+                }
+                if oldValue && !isFacedUp {
+                    previouslySeen = true
+                }
+            }
+        }
+        var isMatched = false {
+            didSet {
+                if isMatched {
+                    stopUsingBonusTime()
+                }
+            }
+        }
         let content: CardContent
         var id: String
         var previouslySeen: Bool = false
+        
+        var bonus: Int {
+            Int(bonusTimeLimit * bonusPercentRemaining)
+        }
+        
+        var faceUpTime: TimeInterval {
+            if let lastFaceUpDate {
+                return pastFaceUpTime + Date().timeIntervalSince(lastFaceUpDate)
+            } else {
+                return pastFaceUpTime
+            }
+        }
+        
+        var bonusPercentRemaining: Double {
+            bonusTimeLimit > 0 ? max(0, bonusTimeLimit - faceUpTime)/bonusTimeLimit : 0
+        }
+        
+        var bonusTimeLimit: TimeInterval = 6
+        
+        var lastFaceUpDate: Date?
+        
+        var pastFaceUpTime: TimeInterval = 0
+        
+        private mutating func startUsingBonusTime() {
+            if isFacedUp && !isMatched && bonusPercentRemaining > 0, lastFaceUpDate == nil {
+                lastFaceUpDate = Date()
+            }
+        }
+        
+        private mutating func stopUsingBonusTime() {
+            pastFaceUpTime = faceUpTime
+            lastFaceUpDate = nil
+        }
     }
 }
