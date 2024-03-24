@@ -17,7 +17,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     init(theme: Theme, cardContent: (Int) -> CardContent) {
         self.theme = theme
         cards = []
-        for i in 0..<max(2, theme.numberOfPairs) {
+        for i in 0..<max(2, theme.numberOfCards) {
             let content = cardContent(i)
             cards.append(Card(content: content, id: "\(i)a"))
             cards.append(Card(content: content, id: "\(i)b"))

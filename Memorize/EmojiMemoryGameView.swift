@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct EmojiMemoryGameView: View {
+    
     @ObservedObject var viewModel: EmojiMemoryGame
     private let aspectRatio : CGFloat = 2/3
     typealias Card = MemoryGame<String>.Card
@@ -39,14 +40,11 @@ struct EmojiMemoryGameView: View {
                 gameOverScreen
                 Spacer()
             }
-            VStack(spacing: 35) {
-                HStack(spacing: 35){
-                    newGame.padding(.leading)
-                    deck
-                    shuffle.padding(.trailing)
-                    
-                }
-                themePicker
+            deck
+            HStack(){
+                newGame.padding(.leading)
+                Spacer()
+                shuffle.padding(.trailing)
             }
         }
         .background(viewModel.color)
@@ -58,7 +56,7 @@ struct EmojiMemoryGameView: View {
             let gridItemSize = gridItemWidthThatFits(count: viewModel.cards.count, size: geometry.size, atAspectRatio: aspectRatio)
             LazyVGrid(columns: [GridItem(.adaptive (minimum: gridItemSize), spacing: 0)], spacing: 0) {
                 ForEach(viewModel.cards) { card in
-                    if isDealt(card){
+                    if (isDealt(card)){
                         CardView(card)
                             .matchedGeometryEffect(id: card.id, in: dealingNamespace)
                             .transition(.asymmetric(insertion: .identity, removal: .identity))
@@ -66,12 +64,11 @@ struct EmojiMemoryGameView: View {
                             .padding(4)
                             .overlay(FlyingNumber(number: scoreChange(causedBy: card)))
                             .zIndex(scoreChange(causedBy: card) != 0 ? 1 : 0)
-                            .transition(.scale)
                             .onTapGesture {
                                 choose(card)
                             }
                     }
-                    
+                        
                 }
             }.foregroundStyle(.quaternary)
             
@@ -98,15 +95,19 @@ struct EmojiMemoryGameView: View {
             }
         }
         .frame(width: 50, height: 50 / aspectRatio)
-        .foregroundStyle(.black)
-        .onTapGesture {
-            var delay: TimeInterval = 0
-            for card in viewModel.cards {
-                withAnimation(.easeInOut(duration: 1).delay(delay)){
-                    _ = dealt.insert(card.id)
-                }
-                delay += 0.25
+        .foregroundStyle(.clear)
+        .onAppear {
+            dealCards()
+        }
+    }
+    
+    func dealCards() {
+        var delay: TimeInterval = 0
+        for card in viewModel.cards {
+            withAnimation(.easeInOut(duration: 1).delay(delay)){
+                _ = dealt.insert(card.id)
             }
+            delay += 0.15
         }
     }
     
@@ -154,53 +155,6 @@ struct EmojiMemoryGameView: View {
         return min(size.width / count, size.height * atAspectRatio).rounded(.down)
     }
     
-    func changeTheme(_ newTheme: String) -> some View {
-        Button(action: {
-            dealt = []
-            withAnimation {
-                viewModel.changeTheme(theme: newTheme)
-            }
-            
-        }, label: {
-            Image(systemName: newTheme).font(.largeTitle)
-        })
-    }
-    
-    private var themePicker: some View {
-        HStack (spacing: 20) {
-            animalsTheme
-            foodTheme
-            facesTheme
-            sportsTheme
-            vehiclesTheme
-            flagsTheme
-        }.foregroundStyle(.black)
-    }
-    
-    private var animalsTheme: some View {
-        changeTheme("dog.fill")
-    }
-    
-    private var foodTheme: some View {
-        changeTheme("carrot.fill")
-    }
-    
-    private var facesTheme: some View {
-        changeTheme("smiley.fill")
-    }
-    
-    private var sportsTheme: some View {
-        changeTheme("soccerball")
-    }
-    
-    private var vehiclesTheme: some View {
-        changeTheme("car.fill")
-    }
-    
-    private var flagsTheme: some View {
-        changeTheme("flag.fill")
-    }
-    
     private var newGame: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25.0)
@@ -210,6 +164,7 @@ struct EmojiMemoryGameView: View {
                 dealt = []
                 withAnimation {
                     viewModel.startNewGame()
+                    dealCards()
                 }
                 
             }, label: {
@@ -219,6 +174,7 @@ struct EmojiMemoryGameView: View {
             })
         }
     }
+    
     private var shuffle: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25.0)
@@ -238,5 +194,5 @@ struct EmojiMemoryGameView: View {
 }
 
 #Preview {
-    EmojiMemoryGameView(viewModel: EmojiMemoryGame())
+    EmojiMemoryGameView(viewModel: EmojiMemoryGame(theme: Theme(name: "Vehicles", emojis: ["🚗", "🚕", "🚙", "🚔", "🏍️", "🚜"], color: RGBA(color: .blue))))
 }

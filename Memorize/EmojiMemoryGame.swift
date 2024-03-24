@@ -8,35 +8,31 @@
 import SwiftUI
 
 class EmojiMemoryGame: ObservableObject {
+    
     //static = make the emojis global but put it in my class
     //private = access it only in here
     
-    private static let animals = ["🦭", "🦋", "🐌", "🦖", "🦇", "🐕", "🦫", "🐝", "🦎", "🦘", "🐀", "🐪"]
-    private static let foods = ["🌭", "🍔", "🍟", "🍕", "🌮", "🌯", "🥗", "🥘", "🍣", "🍯", "🍚", "🥮"]
-    private static let faces = ["😆", "🥹", "🤓", "😎", "🥰", "🤨", "🤯", "😤", "😭", "🫠", "🥱", "🤠"]
-    private static let sports = ["⚽️", "🏀", "🏈", "⚾️", "🏓", "🏐", "🏉", "🎣"]
-    private static let vehicles = ["🚗", "🚕", "🚙", "🚔", "🏍️", "🚜"]
-    private static let flags = ["🇷🇴", "🇺🇸", "🇬🇧", "🇩🇪", "🇫🇷", "🇯🇵", "🇨🇳", "🇰🇷", "🇪🇸", "🇱🇺", "🇬🇪", "🏴󠁧󠁢󠁷󠁬󠁳󠁿"]
+    @Published private var model: MemoryGame<String>
+    var theme: Theme
+    
+    init(theme: Theme) {
+        self.theme = theme
+        self.model = EmojiMemoryGame.createMemoryGame(of: theme)
+    }
     
     private static func createMemoryGame(of theme: Theme) -> MemoryGame<String> {
-        MemoryGame(theme: theme) { pairIndex in
-                return theme.emojis[pairIndex]
+        guard !theme.emojis.isEmpty else {
+            fatalError("Theme emojis array is empty")
+        }
+        
+        return MemoryGame(theme: theme) { pairIndex in
+            let index = pairIndex % theme.emojis.count // Asigură-te că indexul este în intervalul corect
+            return theme.emojis[index]
         }
     }
     
-    private static let themes : [Theme] = [
-        Theme(name: "Animals", emojis: animals, numberOfPairs: animals.count, color: "red"),
-        Theme(name: "Foods", emojis: foods, numberOfPairs: foods.count, color: "indigo"),
-        Theme(name: "Faces", emojis: faces, numberOfPairs: faces.count, color: "brown"),
-        Theme(name: "Sports", emojis: sports, numberOfPairs: sports.count, color: "purple"),
-        Theme(name: "Vehicles", emojis: vehicles, numberOfPairs: vehicles.count, color: "blue"),
-        Theme(name: "Countires", emojis: flags, numberOfPairs: flags.count, color: "gray")
-    ]
-    
-    @Published private var model = createMemoryGame(of: themes.randomElement()!)
-    
     var numberOfPairs: Int {
-        model.theme.numberOfPairs
+        model.theme.numberOfCards
     }
     
     var score: Int {
@@ -56,22 +52,7 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     var color: Color {
-        switch model.theme.color {
-        case "red":
-                .red
-        case "gray":
-                .gray
-        case "brown":
-                .brown
-        case "purple":
-                .purple
-        case "blue":
-                .blue
-        case "indigo":
-                .indigo
-        default:
-                .gray
-        }
+        Color(rgba: model.theme.color)
     }
     
     // MARK: - Intents
@@ -81,23 +62,7 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     func startNewGame(){
-        let randomTheme = EmojiMemoryGame.themes.randomElement()!
-        self.model = EmojiMemoryGame.createMemoryGame(of: randomTheme)
-    }
-    
-    func changeTheme(theme: String) {
-        let themeMappings: [String: Theme] = [
-            "dog.fill": EmojiMemoryGame.themes[0],
-            "carrot.fill": EmojiMemoryGame.themes[1],
-            "smiley.fill": EmojiMemoryGame.themes[2],
-            "soccerball": EmojiMemoryGame.themes[3],
-            "car.fill": EmojiMemoryGame.themes[4],
-            "flag.fill": EmojiMemoryGame.themes[5]
-        ]
-        
-        if let selectedTheme = themeMappings[theme] {
-            self.model = EmojiMemoryGame.createMemoryGame(of: selectedTheme)
-        }
+        self.model = EmojiMemoryGame.createMemoryGame(of: self.theme)
     }
     
     func choose(_ card: MemoryGame<String>.Card){

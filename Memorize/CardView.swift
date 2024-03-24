@@ -38,7 +38,7 @@ struct CardView: View {
         Text(card.content)
             .font(.system(size: 100))
             .minimumScaleFactor(0.01)
-            .aspectRatio(1, contentMode: .fit)
+            .aspectRatio(1, contentMode: .fill)
             .rotationEffect(.degrees(card.isMatched ? 360 : 0))
             .animation(.easeInOut(duration: 1), value: card.isMatched)
     }
